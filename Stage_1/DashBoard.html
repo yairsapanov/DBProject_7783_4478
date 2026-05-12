@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול מנועי שחמט</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --primary: #2563eb; /* כחול טכנולוגי */
+            --primary-hover: #1d4ed8;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-list {
+            padding: 20px 12px;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Content Area */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+        }
+
+        header {
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+            color: #0f172a;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        /* Buttons & Inputs */
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: var(--primary-hover); }
+
+        input, select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 100%;
+            margin-top: 6px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        /* Metrics */
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .progress-container {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .progress-fill.danger {
+            background: #ef4444;
+        }
+
+        /* Chess Board Styles - FIXED */
+        .flex-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        .board-preview {
+            width: 240px;
+            height: 240px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr); /* הפקודה שעושה את כל הקסם! */
+            border: 2px solid #334155;
+            flex-shrink: 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .sq { 
+            background: #f8fafc; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.8rem; /* הגדלנו את הכלים */
+            color: #0f172a;
+            line-height: 1;
+        }
+        .sq.alt { 
+            background: #94a3b8; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 4px;"></div>
+            Chess DB Admin
+        </div>
+        <nav class="nav-list">
+            <div class="nav-item active" onclick="showScreen('dashboard', event)">ניהול בוטים (Bots)</div>
+            <div class="nav-item" onclick="showScreen('monitor', event)">מוניטור שרתים (Telemetry)</div>
+            <div class="nav-item" onclick="showScreen('search', event)">סייר הערכות מנוע (Evaluations)</div>
+            <div class="nav-item" onclick="showScreen('add-engine', event)">הוספת מנוע שחמט חדש</div>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        
+        <!-- Screen 1: Dashboard -->
+        <div id="dashboard" class="screen active">
+            <header>
+                <h1>ניהול בוטים פעילים</h1>
+                <p style="color: var(--text-light)">רשימת הבוטים המשחקים במערכת והמנועים המפעילים אותם</p>
+            </header>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>מזהה (bot_id)</th>
+                            <th>שם תצוגה (display_name)</th>
+                            <th>מנוע מקושר (Engine)</th>
+                            <th>רמת קושי (1-10)</th>
+                            <th>תאריך יצירה</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1042</td>
+                            <td><strong>GrandmasterBot_X</strong></td>
+                            <td>Stockfish v16.1</td>
+                            <td>10</td>
+                            <td>2024-01-15</td>
+                            <td><button>השהה פעילות</button></td>
+                        </tr>
+                        <tr>
+                            <td>1043</td>
+                            <td><strong>Beginner_Trainer</strong></td>
+                            <td>Komodo v14</td>
+                            <td>3</td>
+                            <td>2024-02-20</td>
+                            <td><button>השהה פעילות</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Screen 2: System Telemetry -->
+        <div id="monitor" class="screen">
+            <header>
+                <h1>מוניטור עומסי שרתים</h1>
+                <p style="color: var(--text-light)">נתוני HardwareTelemetry בזמן אמת עבור HardwareNodes</p>
+            </header>
+            <div class="metric-row">
+                <div class="card">
+                    <h3 style="margin-top:0;">Node_ID: 1 (Server-Alpha)</h3>
+                    <small style="color: var(--text-light)">ניצולת מעבד (cpu_usage_pct)</small>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin: 5px 0;">82.4%</div>
+                    <div class="progress-container"><div class="progress-fill danger" style="width: 82%;"></div></div>
+                    
+                    <small style="color: var(--text-light)">טמפרטורה (temp_celsius)</small>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin: 5px 0;">76°C</div>
+                </div>
+                <div class="card">
+                    <h3 style="margin-top:0;">Node_ID: 2 (Server-Beta)</h3>
+                    <small style="color: var(--text-light)">ניצולת מעבד (cpu_usage_pct)</small>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin: 5px 0;">34.1%</div>
+                    <div class="progress-container"><div class="progress-fill" style="width: 34%;"></div></div>
+                    
+                    <small style="color: var(--text-light)">טמפרטורה (temp_celsius)</small>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin: 5px 0;">45°C</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Position Registry -->
+        <div id="search" class="screen">
+            <header>
+                <h1>סייר הערכות עמדה</h1>
+                <p style="color: var(--text-light)">שליפת נתוני EngineEvaluation עבור עמדות (OpeningPosition)</p>
+            </header>
+            <div class="card flex-container">
+                <!-- הלוח ירונדר לכאן -->
+                <div class="board-preview" id="gridPreview" dir="ltr"></div>
+                
+                <div style="flex-grow: 1;">
+                    <div style="margin-bottom: 20px;">
+                        <label>חפש מחרוזת עמדה (FEN String):</label>
+                        <input type="text" value="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" dir="ltr">
+                    </div>
+                    
+                    <small style="color: var(--text-light)">תוצאות ניתוח מנועים לעמדה זו:</small>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>מנוע בוחן</th>
+                                <th>הערכת ציון (eval_score_cp)</th>
+                                <th>עומק חיפוש (search_depth)</th>
+                                <th>המהלך הטוב ביותר (best_move_pgn)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Stockfish 16.1</td>
+                                <td dir="ltr">+0.41</td>
+                                <td>24</td>
+                                <td dir="ltr">e2e4</td>
+                            </tr>
+                            <tr>
+                                <td>Komodo 14</td>
+                                <td dir="ltr">+0.38</td>
+                                <td>22</td>
+                                <td dir="ltr">d2d4</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Deploy Engine -->
+        <div id="add-engine" class="screen">
+            <header>
+                <h1>הוספת מנוע שחמט</h1>
+                <p style="color: var(--text-light)">הזנת רשומת Engine חדשה וקישור לממשקים נתמכים (Engine_UI_Support)</p>
+            </header>
+            <div class="card" style="max-width: 500px;">
+                <div style="margin-bottom: 15px;">
+                    <label>שם המנוע (name)</label>
+                    <input type="text" placeholder="למשל: Leela Chess Zero">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>גרסה (version)</label>
+                    <input type="text" placeholder="למשל: v0.30">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>תאריך שחרור (release_date)</label>
+                    <input type="date">
+                </div>
+                
+                <div style="margin-bottom: 25px; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                    <label style="font-weight: bold;">תמיכה בממשקים (UIClient Subtypes)</label>
+                    <p style="font-size: 0.85rem; color: #64748b; margin: 5px 0;">באילו פלטפורמות המנוע זמין?</p>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" checked> אפליקציית מובייל (MobileClient)</label>
+                        <label><input type="checkbox" checked> ממשק דפדפן (WebClient)</label>
+                    </div>
+                </div>
+                
+                <button style="width: 100%;">שמור מנוע במסד הנתונים</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function showScreen(screenId, event) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // ציור לוח השחמט עם הכלים ההתחלתיים
+        window.onload = () => {
+            const grid = document.getElementById('gridPreview');
+            const pieces = [
+                '♜','♞','♝','♛','♚','♝','♞','♜',
+                '♟','♟','♟','♟','♟','♟','♟','♟',
+                '','','','','','','','',
+                '','','','','','','','',
+                '','','','','','','','',
+                '','','','','','','','',
+                '♙','♙','♙','♙','♙','♙','♙','♙',
+                '♖','♘','♗','♕','♔','♗','♘','♖'
+            ];
+            for (let i = 0; i < 64; i++) {
+                const div = document.createElement('div');
+                const row = Math.floor(i / 8);
+                const col = i % 8;
+                div.className = 'sq' + ((row + col) % 2 === 0 ? '' : ' alt');
+                div.textContent = pieces[i];
+                grid.appendChild(div);
+            }
+        };
+    </script>
+</body>
+</html>
