@@ -1,63 +1,65 @@
 import random
 from datetime import datetime, timedelta
 
-def generate_mock_data():
-    filename = "insert_large.sql"
-    print("⏳ Generating mock data...")
+def generate_telemetry_data(num_servers=20, days=1095):
+    # Generate 3 years of daily telemetry for hardware nodes
+    inserts = []
+    start_date = datetime(2023, 1, 1)
+    telemetry_id = 1
+    
+    for day in range(days):
+        current_date = start_date + timedelta(days=day)
+        date_str = current_date.strftime('%Y-%m-%d %H:%M:%S')
+        
+        for node_id in range(1, num_servers + 1):
+            temp = round(random.uniform(35.0, 85.0), 2)
+            cpu = round(random.uniform(10.0, 95.0), 2)
+            ram = round(random.uniform(20.0, 90.0), 2)
+            disk = random.randint(500, 5000)
+            
+            sql = f"INSERT INTO HardwareTelemetry (telemetry_id, node_id, time_stamp, temp_celsius, cpu_usage_pct, ram_usage_pct, disk_io_ops) VALUES ({telemetry_id}, {node_id}, '{date_str}', {temp}, {cpu}, {ram}, {disk});"
+            inserts.append(sql)
+            telemetry_id += 1
+            
+    return inserts
 
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write("-- Automated script for generating massive mock data - 40,000 rows\n\n")
+def generate_evaluations(num_evals=25000):
+    # Generate 25000 engine evaluations
+    inserts = []
+    eval_id = 1
+    
+    moves = ['e2e4', 'd2d4', 'g1f3', 'c2c4', 'e7e5', 'c7c5', 'g8f6']
+    
+    for i in range(num_evals):
+        # Assume we have 10 engines and 50 opening positions created manually later
+        engine_id = random.randint(1, 10) 
+        fen_id = random.randint(1, 50) 
+        depth = random.randint(15, 30)
+        move = random.choice(moves)
+        score = random.randint(-150, 150)
+        
+        day_offset = random.randint(0, 360)
+        comp_date = (datetime(2023, 1, 1) + timedelta(days=day_offset)).strftime('%Y-%m-%d')
+        
+        sql = f"INSERT INTO EngineEvaluation (eval_id, engine_id, fen_id, search_depth, best_move_pgn, eval_score_cp, computed_date) VALUES ({eval_id}, {engine_id}, {fen_id}, {depth}, '{move}', {score}, '{comp_date}');"
+        inserts.append(sql)
+        eval_id += 1
+        
+    return inserts
 
-        # --- 1. OpeningPosition Table (20,000 rows) ---
-        f.write("-- Generating 20,000 opening positions (OpeningPosition)\n")
-        # FIXED: Added double single-quotes ('') to escape the apostrophe in SQL!
-        openings = [
-            ("C20", "King''s Pawn Game"), ("B20", "Sicilian Defense"),
-            ("C60", "Ruy Lopez"), ("D06", "Queen''s Gambit"),
-            ("A04", "Reti Opening"), ("E90", "King''s Indian Defense"),
-            ("D80", "Grunfeld Defense"), ("B10", "Caro-Kann Defense"),
-            ("C00", "French Defense"), ("B01", "Scandinavian Defense")
-        ]
+# Execute generation and write to file
+print("Generating big data...")
+telemetry_sql = generate_telemetry_data()
+evaluation_sql = generate_evaluations()
 
-        fen_id = 1
-        # Writing in 20 batches of 1000 rows to ensure smooth SQL execution
-        for batch in range(20):
-            values = []
-            for _ in range(1000):
-                eco, base_name = random.choice(openings)
-                # Generating a unique FEN by altering move numbers
-                fen = f"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - {random.randint(0, 15)} {fen_id}"
-                opening_name = f"{base_name} - Line {fen_id}"
-                values.append(f"({fen_id}, '{fen}', '{eco}', '{opening_name}')")
-                fen_id += 1
+with open('insert_large.sql', 'w') as f:
+    f.write("-- HardwareTelemetry Big Data\n")
+    for line in telemetry_sql:
+        f.write(line + "\n")
+        
+    f.write("\n-- EngineEvaluation Big Data\n")
+    for line in evaluation_sql:
+        f.write(line + "\n")
 
-            f.write("INSERT INTO OpeningPosition (fen_id, fen_string, eco_code, opening_name) VALUES\n")
-            f.write(",\n".join(values) + ";\n\n")
-
-        # --- 2. HardwareTelemetry Table (20,000 rows) ---
-        f.write("-- Generating 20,000 server telemetry logs (HardwareTelemetry)\n")
-        # Starting telemetry logs from January 1st, 2026
-        current_time = datetime(2026, 1, 1, 0, 0, 0)
-
-        for batch in range(20):
-            values = []
-            for _ in range(1000):
-                # Assuming HardwareNode IDs 1 and 2 exist in the database
-                node_id = random.choice([1, 2])
-                timestamp_str = current_time.strftime('%Y-%m-%d %H:%M:%S')
-                cpu = random.randint(15, 95)  # Realistic CPU usage
-                temp = random.randint(40, 85)  # Realistic temperature
-
-                values.append(f"({node_id}, '{timestamp_str}', {cpu}, {temp})")
-
-                # Advancing time by 1 minute for the next log entry
-                current_time += timedelta(minutes=1)
-
-            f.write("INSERT INTO HardwareTelemetry (node_id, time_stamp, cpu_usage_pct, temp_celsius) VALUES\n")
-            f.write(",\n".join(values) + ";\n\n")
-
-    print(f"✅ Success! File '{filename}' generated with 40,000 rows.")
-    print("Ready for submission. Don't forget to take a screenshot of the terminal!")
-
-if __name__ == '__main__':
-    generate_mock_data()
+total_rows = len(telemetry_sql) + len(evaluation_sql)
+print(f"Success! File 'insert_large.sql' generated with {total_rows} rows.")
