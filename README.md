@@ -28,6 +28,7 @@ Additionally, the system manages access to different user interfaces (UIClient -
 
 ## User Interface (UI) Mockups
 We built an HTML/CSS Dashboard mockup displaying the core entities of our project:
+**[Click here to view the Google AI Studio Prompt & Generation](https://ai.studio/apps/a5e57c20-f100-45bc-9296-17f3dcfbc5b2)**
 
 1. **Bot Management (Bots):** A list of active bots, their linked engines, and difficulty levels.
    ![click here to view](./Stage_1/image.png)
