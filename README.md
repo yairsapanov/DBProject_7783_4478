@@ -35,7 +35,19 @@ The second phase introduced data analytical filtering, strict validation busines
 
 ---
 
+## 🤝 Phase C: System Integration & Reverse Engineering
+
+The final phase focused on integrating an external database system (managing Chess Players, Clubs, Tournaments, and Games) into our existing architecture, without destroying or dropping any existing tables. 
+
+### Key Deliverables:
+* **Reverse Engineering:** Analyzed external physical DDL files to reconstruct conceptual Entity-Relationship Diagrams (ERD) and logical Data Structure Diagrams (DSD).
+* **Non-Destructive Integration:** Executed strategic `ALTER TABLE` commands to forge a conceptual 1:1 linkage between external human `Player` entities and internal automated `Bot` entities, allowing AI to officially register in human tournaments.
+* **Cross-System Views:** Engineered complex, multi-table logical views combining structural, configuration, and chronological parameters from both sub-systems to serve distinct administrative perspectives (e.g., Engine Admin vs. Tournament Organizer).
+
+---
+
 ## 📁 Repository Structure
 Each stage's source files, backup utilities, and runtime validation screenshots are neatly isolated within their respective directories:
-* `/Stage_1` - Initial relational schema scripts and historical dataset mockups.
-* `/Stage_2` - Optimization routines, transaction scripts, and analytics documentation.
+* `/Stage_1` - Initial relational schema scripts, historical dataset mockups, and base diagrams.
+* `/Stage_2` - Optimization routines, transaction scripts, advanced queries, and analytics documentation.
+* `/Stage_3` - Reverse engineering algorithms, integrated schemas, view definitions, and final system backups.
