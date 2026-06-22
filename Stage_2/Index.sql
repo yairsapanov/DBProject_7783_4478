@@ -1,43 +1,48 @@
 -- ==========================================
--- INDEX 1: ייעול חיפושים על תאריכי טלמטריה
--- טבלת הטלמטריה שלנו ענקית (כ-22 אלף שורות). נשפר חיפושים לפי תאריך.
+-- Index 1: Telemetry Time Stamp
 -- ==========================================
 
--- להריץ לפני (לצלם זמן):
-EXPLAIN ANALYZE SELECT * FROM HardwareTelemetry WHERE time_stamp >= '2025-01-01 00:00:00';
+-- Check execution time before index
+EXPLAIN ANALYZE SELECT * FROM HardwareTelemetry WHERE time_stamp >= '2024-01-01';
 
--- יצירת האינדקס:
-CREATE INDEX idx_telemetry_date ON HardwareTelemetry (time_stamp);
+-- Create the index
+CREATE INDEX idx_telemetry_timestamp ON HardwareTelemetry(time_stamp);
 
--- להריץ אחרי (לצלם את השיפור בזמן):
-EXPLAIN ANALYZE SELECT * FROM HardwareTelemetry WHERE time_stamp >= '2025-01-01 00:00:00';
-
-
--- ==========================================
--- INDEX 2: ייעול סינון ציוני הערכות מנוע
--- טבלת ההערכות מכילה 25,000 שורות. סינון לפי ציון הוא תהליך כבד.
--- ==========================================
-
--- להריץ לפני (לצלם זמן):
-EXPLAIN ANALYZE SELECT engine_id, fen_id, eval_score_cp FROM EngineEvaluation WHERE eval_score_cp > 100;
-
--- יצירת האינדקס:
-CREATE INDEX idx_eval_score ON EngineEvaluation (eval_score_cp);
-
--- להריץ אחרי (לצלם את השיפור בזמן):
-EXPLAIN ANALYZE SELECT engine_id, fen_id, eval_score_cp FROM EngineEvaluation WHERE eval_score_cp > 100;
+-- Check execution time after index
+EXPLAIN ANALYZE SELECT * FROM HardwareTelemetry WHERE time_stamp >= '2024-01-01';
 
 
 -- ==========================================
--- INDEX 3: ייעול חיבורים (JOINs) על מפתחות זרים
--- בפוסטגרס (PostgreSQL), מפתחות זרים לא מקבלים אינדקס אוטומטי! ניצור אחד לבוטים.
+-- Index 2: Evaluation Score
 -- ==========================================
 
--- להריץ לפני (לצלם זמן):
-EXPLAIN ANALYZE SELECT b.display_name, e.name FROM Bot b JOIN Engine e ON b.engine_id = e.engine_id WHERE e.engine_id = 5;
+-- Check execution time before index
+EXPLAIN ANALYZE SELECT * FROM EngineEvaluation WHERE eval_score_cp > 100;
 
--- יצירת האינדקס:
-CREATE INDEX idx_bot_engine_fk ON Bot (engine_id);
+-- Create the index
+CREATE INDEX idx_eval_score ON EngineEvaluation(eval_score_cp);
 
--- להריץ אחרי (לצלם את השיפור בזמן):
-EXPLAIN ANALYZE SELECT b.display_name, e.name FROM Bot b JOIN Engine e ON b.engine_id = e.engine_id WHERE e.engine_id = 5;
+-- Check execution time after index
+EXPLAIN ANALYZE SELECT * FROM EngineEvaluation WHERE eval_score_cp > 100;
+
+
+-- ==========================================
+-- Index 3: Bot Engine ID (Foreign Key Optimization)
+-- ==========================================
+
+-- Check execution time before index
+EXPLAIN ANALYZE 
+SELECT b.display_name, e.name 
+FROM Bot b 
+JOIN Engine e ON b.engine_id = e.engine_id 
+WHERE e.engine_id = 1;
+
+-- Create the index
+CREATE INDEX idx_bot_engine_id ON Bot(engine_id);
+
+-- Check execution time after index
+EXPLAIN ANALYZE 
+SELECT b.display_name, e.name 
+FROM Bot b 
+JOIN Engine e ON b.engine_id = e.engine_id 
+WHERE e.engine_id = 1;
