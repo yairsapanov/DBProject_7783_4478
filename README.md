@@ -1,6 +1,3 @@
-הנה קובץ ה-README המלא והבסיסי באנגלית לפרויקט שלך, המשלב את הסברי המאקרו ואת שלבים 1 ו-2 בצורה תמציתית ומקצועית:
-
-```markdown
 # Chess Engine & Bot Management Database System ♟️🖥️
 
 A robust, relational database system built with **PostgreSQL** designed to manage, monitor, and optimize distributed chess engines, automated play bots, physical computing nodes, and live performance telemetry.
@@ -42,5 +39,3 @@ The second phase introduced data analytical filtering, strict validation busines
 Each stage's source files, backup utilities, and runtime validation screenshots are neatly isolated within their respective directories:
 * `/Stage_1` - Initial relational schema scripts and historical dataset mockups.
 * `/Stage_2` - Optimization routines, transaction scripts, and analytics documentation.
-
-```
