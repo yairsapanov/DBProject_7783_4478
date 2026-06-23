@@ -230,7 +230,7 @@ $$;
 * **Success Output:**
   ![Main 1 Success](M1S.png)
 * **Exception Output (Function validation failure):**
-  ![Main 1 Exception](M1E.png)
+  ![Main 1 Exception](M1Ex.png)
 
 ### Main Program 2 (`main_player_promotion.sql`)
 Calls `pr_promote_active_players` and reads from the `fn_get_top_players` Ref Cursor.
