@@ -10,8 +10,9 @@ This project models a scalable platform that tracks chess engine analysis (such 
 ---
 
 ## 🛠️ Phase A: Schema Design & Data Ingestion
-
 The objective of the first phase was establishing a solid relational foundation and stress-testing the architecture with a large dataset.
+
+![Phase A ERD](Stage_1/ERD.png)
 
 ### Key Deliverables:
 * **Relational Schema:** Designed and implemented 12 interconnected tables using optimal data types, explicit Primary Keys, and strictly enforced Referential Integrity (Foreign Keys with cascading behaviors).
@@ -22,8 +23,9 @@ The objective of the first phase was establishing a solid relational foundation 
 ---
 
 ## 🚀 Phase B: Advanced Queries, DML & Performance Optimization
-
 The second phase introduced data analytical filtering, strict validation business rules, and indexing mechanisms to minimize latency under high record volumes.
+
+![Phase B Optimization](Stage_2/Screenshots/Queries/1.A.png)
 
 ### Key Deliverables:
 * **Analytical Queries:** Penned 8 advanced `SELECT` operations leveraging conditional groupings (`GROUP BY`, `HAVING`), multi-key ordering, and atomic date-part Extractions (`EXTRACT`).
@@ -36,13 +38,27 @@ The second phase introduced data analytical filtering, strict validation busines
 ---
 
 ## 🤝 Phase C: System Integration & Reverse Engineering
+The third phase focused on integrating an external database system (managing Chess Players, Clubs, Tournaments, and Games) into our existing architecture, without destroying or dropping any existing tables. 
 
-The final phase focused on integrating an external database system (managing Chess Players, Clubs, Tournaments, and Games) into our existing architecture, without destroying or dropping any existing tables. 
+![Phase C Integration](Stage_3/ERD_integrated.png)
 
 ### Key Deliverables:
 * **Reverse Engineering:** Analyzed external physical DDL files to reconstruct conceptual Entity-Relationship Diagrams (ERD) and logical Data Structure Diagrams (DSD).
 * **Non-Destructive Integration:** Executed strategic `ALTER TABLE` commands to forge a conceptual 1:1 linkage between external human `Player` entities and internal automated `Bot` entities, allowing AI to officially register in human tournaments.
-* **Cross-System Views:** Engineered complex, multi-table logical views combining structural, configuration, and chronological parameters from both sub-systems to serve distinct administrative perspectives (e.g., Engine Admin vs. Tournament Organizer).
+* **Cross-System Views:** Engineered complex, multi-table logical views combining structural, configuration, and chronological parameters from both sub-systems to serve distinct administrative perspectives.
+
+---
+
+## ⚙️ Phase D: PL/pgSQL Programming
+The fourth phase elevated the database from a static storage system to an active backend by implementing server-side business logic using PL/pgSQL.
+
+![Phase D PL/pgSQL Execution](Stage_4/M2S.png)
+
+### Key Deliverables:
+* **Custom Functions:** Developed parameterized functions utilizing explicit cursors and `refcursor` to dynamically calculate tournament scores and fetch top-tier players/bots.
+* **Automated Procedures:** Created batch-processing procedures with complex conditional branching (`IF/ELSE`) and loops to execute multi-table DML updates (e.g., closing tournaments and granting ELO/difficulty promotions).
+* **Active Triggers:** Designed robust `BEFORE INSERT` and `BEFORE UPDATE` triggers to automatically enforce critical business rules, such as preventing negative ELO ratings and blocking registrations to closed events.
+* **Exception Handling:** Integrated comprehensive `RAISE EXCEPTION` blocks across all modules to ensure transactional safety, data validation, and logical integrity.
 
 ---
 
@@ -50,4 +66,5 @@ The final phase focused on integrating an external database system (managing Che
 Each stage's source files, backup utilities, and runtime validation screenshots are neatly isolated within their respective directories:
 * `/Stage_1` - Initial relational schema scripts, historical dataset mockups, and base diagrams.
 * `/Stage_2` - Optimization routines, transaction scripts, advanced queries, and analytics documentation.
-* `/Stage_3` - Reverse engineering algorithms, integrated schemas, view definitions, and final system backups.
+* `/Stage_3` - Reverse engineering algorithms, integrated schemas, view definitions, and Phase 3 backups.
+* `/Stage_4` - PL/pgSQL modules (Functions, Procedures, Triggers), main execution scripts, and Phase 4 backups.
