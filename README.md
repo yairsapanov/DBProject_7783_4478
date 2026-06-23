@@ -12,7 +12,7 @@ This project models a scalable platform that tracks chess engine analysis (such 
 ## 🛠️ Phase A: Schema Design & Data Ingestion
 The objective of the first phase was establishing a solid relational foundation and stress-testing the architecture with a large dataset.
 
-![Phase A ERD](Stage_1/ERD.png)
+![Phase A ERD](Stage_1/erd.png)
 
 ### Key Deliverables:
 * **Relational Schema:** Designed and implemented 12 interconnected tables using optimal data types, explicit Primary Keys, and strictly enforced Referential Integrity (Foreign Keys with cascading behaviors).
