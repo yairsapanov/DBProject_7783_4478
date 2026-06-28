@@ -62,9 +62,23 @@ The fourth phase elevated the database from a static storage system to an active
 
 ---
 
+## 🎨 Phase E: Graphical User Interface (GUI) 
+In the final phase of the project, we developed a modern, interactive Web Application to interface with our PostgreSQL database. We bypassed traditional, clunky desktop frameworks in favor of a sleek, browser-based dashboard utilizing **Role-Based Access Control (RBAC)**.
+
+![Phase E GUI](Stage_5/screenshots/screen1/S1.png)
+
+### Key Deliverables:
+* **Technology Stack:** Developed using Python 3, `Streamlit` (UI Framework), `psycopg2` (DB Adapter), and `Pandas` (Data formatting).
+* **System Admin Dashboard:** Integrated advanced analytical queries (Phase B) and triggered active PL/pgSQL functions and procedures (Phase D) directly from the UI, featuring live exception handling.
+* **Tournament Organizer Dashboard:** Engineered seamless CRUD operations. Enforced UI requirements by fetching existing records prior to updates, and utilized SQL `JOIN`s to display readable names (e.g., Club Names, Player Types) rather than raw foreign keys.
+* **Hardware Technician Dashboard:** Added an advanced monitoring tab to track live hardware telemetry (`HardwareTelemetry` joined with `HardwareNode`) and manage bare-metal infrastructure directly from the web panel.
+
+---
+
 ## 📁 Repository Structure
 Each stage's source files, backup utilities, and runtime validation screenshots are neatly isolated within their respective directories:
 * `/Stage_1` - Initial relational schema scripts, historical dataset mockups, and base diagrams.
 * `/Stage_2` - Optimization routines, transaction scripts, advanced queries, and analytics documentation.
 * `/Stage_3` - Reverse engineering algorithms, integrated schemas, view definitions, and Phase 3 backups.
 * `/Stage_4` - PL/pgSQL modules (Functions, Procedures, Triggers), main execution scripts, and Phase 4 backups.
+* `/Stage_5` - Python UI application source code (`app.py`, `db_connection.py`), documentation, and comprehensive GUI execution screenshots.
